@@ -44,17 +44,19 @@
 
   // --- SVG Icons ---
   const ICONS = {
-    pdf: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
-    download: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
-    copy: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
-    trash: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`,
-    close: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-    scan: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21"/></svg>`,
-    filter: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>`,
-    check: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-    pause: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`,
-    play: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
-    help: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
+    pdf: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v6h6"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>`,
+    download: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>`,
+    copy: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`,
+    trash: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`,
+    close: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+    scan: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-4.3-4.3"/></svg>`,
+    filter: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>`,
+    check: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>`,
+    pause: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="4" height="16" x="6" y="4" rx="1"/><rect width="4" height="16" x="14" y="4" rx="1"/></svg>`,
+    play: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 14 9-14 9V3z"/></svg>`,
+    help: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 1 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
+    move: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9 2 12l3 3"/><path d="m9 5 3-3 3 3"/><path d="m15 19-3 3-3-3"/><path d="m19 9 3 3-3 3"/><path d="M2 12h20"/><path d="M12 2v20"/></svg>`,
+    info: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`
   };
 
   const state = {
@@ -135,7 +137,8 @@
       if (!container) return;
       const toast = document.createElement('div');
       toast.className = `pdf-toast pdf-toast-${type}`;
-      toast.innerHTML = `<div class="pdf-toast-text">${escapeHtml(msg)}</div>`;
+      const toastIcon = type === 'success' ? ICONS.check : type === 'error' ? ICONS.close : ICONS.info;
+      toast.innerHTML = `<span class="pdf-toast-icon">${toastIcon}</span><div class="pdf-toast-text">${escapeHtml(msg)}</div>`;
       container.appendChild(toast);
 
       requestAnimationFrame(() => toast.classList.add('show'));
@@ -150,10 +153,10 @@
       const pauseBtn = document.getElementById('pdf-catcher-pause');
       if (pauseBtn) {
           if (state.isPaused) {
-              pauseBtn.innerHTML = `${ICONS.play} 已暂停`;
+              pauseBtn.innerHTML = `${ICONS.play} 恢复并扫描`;
               pauseBtn.className = 'pdf-tool-btn pdf-btn-warning';
           } else {
-              pauseBtn.innerHTML = `${ICONS.pause} 监听中`;
+              pauseBtn.innerHTML = `${ICONS.pause} 暂停监听`;
               pauseBtn.className = 'pdf-tool-btn';
           }
       }
@@ -214,6 +217,21 @@
     }
   }
 
+  function updateDockHoverFromPointer(event) {
+    if (!isTopWindow || !state.isMini) return;
+    const edgeZone = CONFIG.miniSize + CONFIG.peekSize;
+    const top = state.lastY;
+    const inVerticalZone = event.clientY >= top - 16 && event.clientY <= top + CONFIG.miniSize + 16;
+    const nearEdge = state.dockSide === 'left'
+      ? event.clientX <= edgeZone
+      : event.clientX >= window.innerWidth - edgeZone;
+    const nextHovering = inVerticalZone && nearEdge;
+    if (nextHovering !== state.hovering) {
+      state.hovering = nextHovering;
+      updateDockAppearance();
+    }
+  }
+
   function renderList() {
     if (!isTopWindow) return;
     const list = document.getElementById('pdf-catcher-list');
@@ -228,8 +246,13 @@
       list.innerHTML = `
         <div class="pdf-catcher-empty">
           <div class="pdf-empty-icon">${ICONS.pdf}</div>
-          <div class="pdf-empty-text">${state.showOnlyNew ? '无新记录' : '空空如也'}</div>
+          <div class="pdf-empty-title">${state.showOnlyNew ? '没有新记录' : '还没有捕获到 PDF'}</div>
+          <div class="pdf-empty-text">${state.showOnlyNew ? '关闭“新项”筛选查看全部记录' : '打开或刷新页面后，检测到的 PDF 会出现在这里'}</div>
+          ${state.isPaused ? '<button class="pdf-empty-action" data-role="resume">恢复并扫描</button>' : ''}
         </div>`;
+      list.onclick = (e) => {
+        if (e.target.closest('[data-role="resume"]')) document.getElementById('pdf-catcher-pause')?.click();
+      };
       return;
     }
 
@@ -251,7 +274,7 @@
       </div>
     `).join('');
 
-    list.onclick = (e) => {
+    list.onclick = async (e) => {
         const btn = e.target.closest('.pdf-action-btn');
         if (!btn) return;
         const id = Number(btn.dataset.id);
@@ -259,7 +282,8 @@
         const role = btn.dataset.role;
 
         if (role === 'copy' && item) {
-            GM_setClipboard(item.url, 'text');
+            if (typeof GM_setClipboard === 'function') GM_setClipboard(item.url, 'text');
+            else if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(item.url);
             const originalIcon = btn.innerHTML;
             btn.innerHTML = ICONS.check;
             btn.classList.add('pdf-text-success');
@@ -513,7 +537,7 @@
       }
 
       #pdf-catcher-panel.expanded {
-        width: ${CONFIG.panelWidth}px;
+        width: min(${CONFIG.panelWidth}px, calc(100vw - 24px));
         background: var(--pdf-bg);
         border: 1px solid var(--pdf-border);
         border-radius: var(--pdf-radius-lg);
@@ -550,6 +574,7 @@
       }
       .pdf-btn-icon-header:hover, .pdf-btn-icon-header.active { background: var(--pdf-surface-hover); color: var(--pdf-text-main); }
       .pdf-btn-icon-header svg { pointer-events: none; width: 16px; height: 16px; }
+      .pdf-header-actions { display: flex; gap: 4px; align-items: center; }
 
       .pdf-catcher-toolbar {
         display: flex;
@@ -557,7 +582,9 @@
         padding: 6px 12px;
         background: var(--pdf-surface);
         border-bottom: 1px solid var(--pdf-border);
+        flex-wrap: wrap;
       }
+      .pdf-toolbar-spacer { flex: 1; min-width: 8px; }
       .pdf-tool-btn {
         background: transparent; border: 1px solid transparent;
         color: var(--pdf-text-mut); font-size: 11px; padding: 4px 8px;
@@ -582,10 +609,13 @@
 
       .pdf-catcher-empty {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        padding: 40px 0; color: var(--pdf-text-mut);
+        padding: 36px 18px; color: var(--pdf-text-mut); text-align: center;
       }
       .pdf-empty-icon svg { width: 32px; height: 32px; stroke-width: 1.2; opacity: 0.4; margin-bottom: 12px; }
-      .pdf-empty-text { font-size: 12px; }
+      .pdf-empty-title { font-size: 13px; color: var(--pdf-text-main); font-weight: 600; }
+      .pdf-empty-text { font-size: 11px; line-height: 1.5; margin-top: 6px; max-width: 220px; }
+      .pdf-empty-action { margin-top: 14px; border: 1px solid rgba(59, 130, 246, 0.35); background: rgba(59, 130, 246, 0.14); color: #93c5fd; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer; }
+      .pdf-empty-action:hover { background: rgba(59, 130, 246, 0.24); color: #dbeafe; }
 
       .pdf-item {
         display: flex;
@@ -635,10 +665,10 @@
         display: flex;
         gap: 2px;
         flex-shrink: 0;
-        opacity: 0;
+        opacity: 0.78;
         transition: opacity 0.15s ease;
       }
-      .pdf-item:hover .pdf-item-actions { opacity: 1; }
+      .pdf-item:hover .pdf-item-actions, .pdf-item:focus-within .pdf-item-actions { opacity: 1; }
 
       .pdf-action-btn {
         width: 24px; height: 24px;
@@ -662,20 +692,30 @@
       .pdf-guide-text strong { color: var(--pdf-text-main); font-weight: 500; }
 
       #pdf-catcher-toasts {
-        position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+        position: fixed; right: 18px; bottom: 18px;
         z-index: 2147483647; display: flex; flex-direction: column; gap: 8px; pointer-events: none;
       }
       .pdf-toast {
-        background: var(--pdf-surface); border: 1px solid var(--pdf-border);
-        box-shadow: var(--pdf-shadow); border-radius: var(--pdf-radius-md);
-        padding: 6px 12px; display: flex; align-items: center;
-        opacity: 0; transform: translateY(-10px); transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        min-width: 220px; max-width: min(360px, calc(100vw - 36px));
+        background: rgba(39, 39, 42, 0.96); border: 1px solid var(--pdf-border);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28); border-radius: 8px;
+        padding: 10px 12px; display: flex; align-items: center; gap: 9px;
+        opacity: 0; transform: translateY(12px); transition: all 0.2s ease;
       }
       .pdf-toast.show { opacity: 1; transform: translateY(0); }
-      .pdf-toast-text { font-size: 12px; font-weight: 500; color: var(--pdf-text-main); }
-      .pdf-toast-success { border-left: 3px solid var(--pdf-success); }
-      .pdf-toast-error { border-left: 3px solid var(--pdf-danger); }
-      .pdf-toast-info { border-left: 3px solid var(--pdf-accent); }
+      .pdf-toast-icon { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 18px; }
+      .pdf-toast-icon svg { width: 16px; height: 16px; }
+      .pdf-toast-text { font-size: 12px; font-weight: 500; color: var(--pdf-text-main); line-height: 1.35; }
+      .pdf-toast-success .pdf-toast-icon { color: var(--pdf-success); }
+      .pdf-toast-error .pdf-toast-icon { color: var(--pdf-danger); }
+      .pdf-toast-info .pdf-toast-icon { color: var(--pdf-accent); }
+      @media (max-width: 420px) { #pdf-catcher-toasts { left: 12px; right: 12px; bottom: 14px; align-items: center; } .pdf-toast { min-width: 0; width: min(100%, 360px); } }
+
+      @media (max-width: 420px) {
+        #pdf-catcher-panel.expanded { left: 12px !important; right: 12px !important; width: auto; }
+        .pdf-catcher-toolbar { padding-left: 8px; padding-right: 8px; }
+        .pdf-tool-btn { padding-left: 6px; padding-right: 6px; }
+      }
     `;
     document.head.appendChild(style);
 
@@ -697,7 +737,7 @@
              ${ICONS.pdf} <span id="pdf-catcher-title-text">PDF 捕获器</span>
              <span class="pdf-header-count" id="pdf-catcher-count">0</span>
           </div>
-          <div style="display: flex; gap: 4px; align-items: center;">
+          <div class="pdf-header-actions">
              <!-- 新的 ? 按钮，放在标题同行的右上角 -->
              <button class="pdf-btn-icon-header" id="pdf-catcher-help" title="使用指南">${ICONS.help}</button>
              <button class="pdf-btn-icon-header" id="pdf-catcher-close" title="收起">${ICONS.close}</button>
@@ -705,10 +745,9 @@
         </div>
 
         <div class="pdf-catcher-toolbar">
-            <button class="pdf-tool-btn" id="pdf-catcher-scan" title="重新扫描并恢复">${ICONS.scan} 扫描</button>
             <button class="pdf-tool-btn" id="pdf-catcher-filter" title="仅查看新捕获项目">${ICONS.filter} 新项</button>
-            <button class="pdf-tool-btn" id="pdf-catcher-pause" title="暂停/恢复捕获"></button>
-            <div style="flex: 1;"></div>
+            <button class="pdf-tool-btn" id="pdf-catcher-pause" title="暂停或恢复监听"></button>
+            <div class="pdf-toolbar-spacer"></div>
             <button class="pdf-tool-btn" id="pdf-catcher-clear" title="清空并暂停">${ICONS.trash} 清空</button>
         </div>
 
@@ -723,7 +762,7 @@
                     <div class="pdf-guide-text"><strong>无感嗅探：</strong>跨域 iframe、Fetch、XHR 底层深度拦截，静默捕获当前网页潜藏的 PDF 文档。</div>
                 </div>
                 <div class="pdf-guide-item">
-                    <span class="pdf-guide-icon">🧲</span>
+                    <span class="pdf-guide-icon">${ICONS.move}</span>
                     <div class="pdf-guide-text"><strong>防抖贴边：</strong>随意拖拽悬浮球至屏幕两侧，松手即自动贴边隐藏。</div>
                 </div>
                 <div class="pdf-guide-item">
@@ -749,17 +788,7 @@
         renderList();
         renderToolbar();
         updateDockAppearance();
-        showToast('已清空并暂停捕获');
-    });
-
-    document.getElementById('pdf-catcher-scan').addEventListener('click', () => {
-        state.isPaused = false;
-        // 如果正在查看指南，主动切回列表
-        if(state.showGuide) document.getElementById('pdf-catcher-help').click();
-        persistUI();
-        renderToolbar();
-        scanDOM();
-        showToast('已恢复监听并扫描');
+        showToast('已清空并暂停监听');
     });
 
     document.getElementById('pdf-catcher-pause').addEventListener('click', () => {
@@ -768,9 +797,10 @@
         renderToolbar();
         if(!state.isPaused) {
             scanDOM();
-            showToast('已恢复捕获');
+            if(state.showGuide) document.getElementById('pdf-catcher-help').click();
+            showToast('已恢复监听并扫描');
         } else {
-            showToast('已暂停捕获');
+            showToast('已暂停监听');
         }
     });
 
@@ -803,8 +833,7 @@
         if(!state.showGuide) renderList();
     });
 
-    panel.addEventListener('mouseenter', () => { state.hovering = true; if (state.isMini) updateDockAppearance(); });
-    panel.addEventListener('mouseleave', () => { state.hovering = false; if (state.isMini) updateDockAppearance(); });
+    document.addEventListener('mousemove', updateDockHoverFromPointer, { passive: true });
 
     enableDrag(panel, miniArea, true);
     enableDrag(panel, headerArea, false);
