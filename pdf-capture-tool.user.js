@@ -221,6 +221,7 @@
     if (!panel) return;
 
     panel.className = '';
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
     let top = Math.max(0, Math.min(window.innerHeight - CONFIG.miniSize, state.lastY));
     panel.style.top = `${top}px`;
 
@@ -234,7 +235,7 @@
     if (state.isMini) {
       panel.classList.add('mini');
       const offset = state.hovering ? 8 : -(CONFIG.miniSize - CONFIG.peekSize);
-      const baseLeft = state.dockSide === 'left' ? 0 : window.innerWidth - CONFIG.miniSize;
+      const baseLeft = state.dockSide === 'left' ? 0 : viewportWidth - CONFIG.miniSize;
       const shift = state.dockSide === 'left' ? offset : -offset;
 
       if (state.dockSide === 'left') {
@@ -250,8 +251,8 @@
     } else {
       panel.classList.add('expanded');
       panel.classList.add(state.dockSide === 'left' ? 'dock-left' : 'dock-right');
-      let left = state.dockSide === 'left' ? 12 : window.innerWidth - CONFIG.panelWidth - 12;
-      left = Math.max(0, Math.min(window.innerWidth - CONFIG.panelWidth, left));
+      let left = state.dockSide === 'left' ? 12 : viewportWidth - CONFIG.panelWidth - 12;
+      left = Math.max(0, Math.min(viewportWidth - CONFIG.panelWidth, left));
 
       const rectHeight = Math.min(window.innerHeight - 24, CONFIG.panelMaxHeight + 80);
       top = Math.max(12, Math.min(window.innerHeight - rectHeight, top));
@@ -300,9 +301,10 @@
     const edgeZone = CONFIG.miniSize + CONFIG.peekSize;
     const top = state.lastY;
     const inVerticalZone = event.clientY >= top - 16 && event.clientY <= top + CONFIG.miniSize + 16;
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
     const nearEdge = state.dockSide === 'left'
       ? event.clientX <= edgeZone
-      : event.clientX >= window.innerWidth - edgeZone;
+      : event.clientX >= viewportWidth - edgeZone;
     const nextHovering = inVerticalZone && nearEdge;
     if (nextHovering !== state.hovering) {
       state.hovering = nextHovering;
@@ -556,7 +558,8 @@
         const rect = panel.getBoundingClientRect();
         state.lastY = rect.top;
         const distLeft = rect.left;
-        const distRight = window.innerWidth - rect.right;
+        const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+        const distRight = viewportWidth - rect.right;
 
         state.dockSide = distLeft < distRight ? 'left' : 'right';
 
@@ -983,6 +986,7 @@
     });
 
     document.addEventListener('mousemove', updateDockHoverFromPointer, { passive: true });
+    window.addEventListener('resize', updateDockAppearance, { passive: true });
 
     enableDrag(panel, miniArea, true);
     enableDrag(panel, headerArea, false);
