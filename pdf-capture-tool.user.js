@@ -759,15 +759,15 @@
             <div id="pdf-catcher-guide-view" class="pdf-guide-view">
                 <div class="pdf-guide-item">
                     <span class="pdf-guide-icon">${ICONS.scan}</span>
-                    <div class="pdf-guide-text"><strong>无感嗅探：</strong>跨域 iframe、Fetch、XHR 底层深度拦截，静默捕获当前网页潜藏的 PDF 文档。</div>
+                    <div class="pdf-guide-text"><strong>自动发现：</strong>监听页面中的链接、iframe、Fetch 和 XHR，并识别可能的 PDF 资源。</div>
                 </div>
                 <div class="pdf-guide-item">
                     <span class="pdf-guide-icon">${ICONS.move}</span>
-                    <div class="pdf-guide-text"><strong>防抖贴边：</strong>随意拖拽悬浮球至屏幕两侧，松手即自动贴边隐藏。</div>
+                    <div class="pdf-guide-text"><strong>稳定贴边：</strong>拖拽悬浮球到屏幕两侧，松手后会自动贴边，鼠标靠近时滑出。</div>
                 </div>
                 <div class="pdf-guide-item">
                     <span class="pdf-guide-icon">${ICONS.check}</span>
-                    <div class="pdf-guide-text"><strong>快捷下载：</strong>鼠标轻触列表记录即可呼出悬浮菜单，一键拷贝源链接或直接本地下载。</div>
+                    <div class="pdf-guide-text"><strong>快捷操作：</strong>列表中的按钮可复制源链接、发起本地下载或删除记录。</div>
                 </div>
             </div>
         </div>
