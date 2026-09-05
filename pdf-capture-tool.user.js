@@ -80,6 +80,14 @@
   function getFileNameFromUrl(url) { try { const u = new URL(url, location.href); const path = u.pathname.split('/').filter(Boolean); let name = decodeURIComponent(path[path.length - 1] || 'download.pdf'); if (!/\.pdf$/i.test(name)) name += '.pdf'; return sanitizeFilename(name); } catch { return 'download.pdf'; } }
   function parseFilenameFromContentDisposition(cd) { if (!cd) return ''; let m = cd.match(/filename\*=UTF-8''([^;]+)/i); if (m && m[1]) { try { return sanitizeFilename(decodeURIComponent(m[1].replace(/["']/g, ''))); } catch {} } m = cd.match(/filename="?([^"]+)"?/i); if (m && m[1]) return sanitizeFilename(m[1]); return ''; }
   function isLikelyPdfUrl(url) { if (!url) return false; return (/\.pdf(?:$|[?#])/i.test(url) || /[?&](file|filename|download|attachment)=[^&#]*\.pdf(?:$|[&#])/i.test(url) || /^blob:/i.test(url) || /^data:application\/pdf/i.test(url)); }
+  function isKnownDemoPdfUrl(url) {
+    try {
+      const parsed = new URL(url, location.href);
+      return parsed.pathname === '/pdfjs-dist/web/example.pdf';
+    } catch {
+      return false;
+    }
+  }
   function isPdfContentType(contentType) { return /application\/pdf|application\/x-pdf|text\/pdf/i.test(contentType || ''); }
   function arrayBufferStartsWithPdfMagic(buffer) { if (!buffer || buffer.byteLength < 5) return false; const bytes = new Uint8Array(buffer.slice(0, 5)); return bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46 && bytes[4] === 0x2D; }
   function escapeHtml(str) { return String(str ?? '').replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s])); }
@@ -100,6 +108,7 @@
 
     if (!item || !item.url) return;
     const normalized = normalizeUrl(item.url);
+    if (isKnownDemoPdfUrl(normalized)) return;
     const key = makeKey(normalized, item.source || 'unknown', item.method || '');
 
     if (state.items.has(key)) {
@@ -333,6 +342,7 @@
     if (state.isPaused) return;
     const abs = normalizeUrl(url);
     if (!isLikelyPdfUrl(abs)) return;
+    if (isKnownDemoPdfUrl(abs)) return;
     const itemData = { url: abs, source, method: extra.method, fileName: extra.fileName, detectedAt: new Date().toISOString() };
 
     if (isTopWindow) {
