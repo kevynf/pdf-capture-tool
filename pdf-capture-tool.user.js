@@ -92,14 +92,14 @@
   function arrayBufferStartsWithPdfMagic(buffer) { if (!buffer || buffer.byteLength < 5) return false; const bytes = new Uint8Array(buffer.slice(0, 5)); return bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46 && bytes[4] === 0x2D; }
   function escapeHtml(str) { return String(str ?? '').replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s])); }
   function formatRelativeTime(ts) { const diff = Date.now() - new Date(ts).getTime(); if (diff < 60000) return '刚刚'; if (diff < 3600000) return `${Math.floor(diff / 60000)}m`; if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`; return `${Math.floor(diff / 86400000)}d`; }
-  function makeKey(url, source, extra = '') { return `${normalizeUrl(url)}__${source}__${extra}`; }
+  function makeKey(url) { return normalizeUrl(url); }
   function isNewItem(item) { return Date.now() - new Date(item.detectedAt).getTime() <= CONFIG.newItemDurationMs; }
 
   // --- Persistence ---
   function persistUI() { gmSet(CONFIG.storageKeyUI, { isMini: state.isMini, dockSide: state.dockSide, lastY: state.lastY, showOnlyNew: state.showOnlyNew, isPaused: state.isPaused }); }
   function loadUI() { const saved = gmGet(CONFIG.storageKeyUI, null); if (!saved) return; state.isMini = saved.isMini !== false; state.dockSide = saved.dockSide || 'right'; state.lastY = saved.lastY || CONFIG.defaultTop; state.showOnlyNew = !!saved.showOnlyNew; state.isPaused = !!saved.isPaused; }
   function persistItems() { const items = Array.from(state.items.values()).sort((a, b) => new Date(b.detectedAt) - new Date(a.detectedAt)).slice(0, CONFIG.maxPersistedItems); gmSet(CONFIG.storageKeyItems, items); }
-  function loadItems() { const arr = gmGet(CONFIG.storageKeyItems,[]); if (!Array.isArray(arr)) return; state.items.clear(); let maxId = 0; for (const item of arr) { if (!item || !item.url) continue; const key = makeKey(item.url, item.source, item.method); state.items.set(key, item); if (item.id > maxId) maxId = item.id; } state.seq = maxId + 1; }
+  function loadItems() { const arr = gmGet(CONFIG.storageKeyItems,[]); if (!Array.isArray(arr)) return; state.items.clear(); let maxId = 0; for (const item of arr) { if (!item || !item.url || isKnownDemoPdfUrl(item.url)) continue; const key = makeKey(item.url); state.items.set(key, item); if (item.id > maxId) maxId = item.id; } state.seq = maxId + 1; }
 
   // --- Logic ---
   function addPdfItem(item) {
@@ -109,7 +109,7 @@
     if (!item || !item.url) return;
     const normalized = normalizeUrl(item.url);
     if (isKnownDemoPdfUrl(normalized)) return;
-    const key = makeKey(normalized, item.source || 'unknown', item.method || '');
+    const key = makeKey(normalized);
 
     if (state.items.has(key)) {
       const old = state.items.get(key);
@@ -393,6 +393,19 @@
     const originalOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function (method, url) {
       if (!state.isPaused) captureFromUrl(url, 'xhr', { method });
+      this.addEventListener('load', () => {
+        if (state.isPaused) return;
+        const responseUrl = this.responseURL || url;
+        const contentType = this.getResponseHeader('content-type') || '';
+        const contentDisposition = this.getResponseHeader('content-disposition') || '';
+        if (isPdfContentType(contentType) || /\.pdf/i.test(contentDisposition)) {
+          addPdfItem({
+            url: responseUrl,
+            source: 'xhr:resp',
+            fileName: parseFilenameFromContentDisposition(contentDisposition) || getFileNameFromUrl(responseUrl),
+          });
+        }
+      });
       return originalOpen.apply(this, arguments);
     };
   })();
