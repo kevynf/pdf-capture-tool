@@ -234,20 +234,22 @@
     if (state.isMini) {
       panel.classList.add('mini');
       const offset = state.hovering ? 8 : -(CONFIG.miniSize - CONFIG.peekSize);
+      const baseLeft = state.dockSide === 'left' ? 0 : window.innerWidth - CONFIG.miniSize;
+      const shift = state.dockSide === 'left' ? offset : -offset;
 
       if (state.dockSide === 'left') {
         panel.classList.add('dock-left');
-        panel.style.left = `${offset}px`;
-        panel.style.right = 'auto';
       } else {
         panel.classList.add('dock-right');
-        panel.style.right = `${offset}px`;
-        panel.style.left = 'auto';
       }
+      panel.style.left = `${baseLeft}px`;
+      panel.style.right = 'auto';
+      panel.style.transform = `translate3d(${shift}px, 0, 0)`;
       if (!state.hovering) panel.classList.add('peek');
 
     } else {
       panel.classList.add('expanded');
+      panel.classList.add(state.dockSide === 'left' ? 'dock-left' : 'dock-right');
       let left = state.dockSide === 'left' ? 12 : window.innerWidth - CONFIG.panelWidth - 12;
       left = Math.max(0, Math.min(window.innerWidth - CONFIG.panelWidth, left));
 
@@ -257,13 +259,36 @@
       panel.style.left = `${left}px`;
       panel.style.top = `${top}px`;
       panel.style.right = 'auto';
+      panel.style.transform = 'none';
     }
   }
 
   function togglePanel() {
+    const panel = document.getElementById('pdf-catcher-panel');
+    const beforeRect = panel?.getBoundingClientRect();
+    panel?.__pdfResizeAnimation?.cancel();
     state.isMini = !state.isMini;
     persistUI();
     updateDockAppearance();
+    if (panel) {
+      const afterRect = panel.getBoundingClientRect();
+      const targetTransform = getComputedStyle(panel).transform;
+      const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      if (beforeRect && afterRect.width > 0 && afterRect.height > 0 && !reduceMotion && typeof panel.animate === 'function') {
+        const scaleX = Math.max(0.05, beforeRect.width / afterRect.width);
+        const scaleY = Math.max(0.05, beforeRect.height / afterRect.height);
+        const scaleTransform = `scale(${scaleX}, ${scaleY})`;
+        panel.__pdfResizeAnimation = panel.animate([
+          { transform: state.isMini ? scaleTransform : targetTransform },
+          { transform: state.isMini ? targetTransform : 'none' },
+        ], { duration: 220, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)' });
+        panel.__pdfResizeAnimation.onfinish = () => { panel.__pdfResizeAnimation = null; };
+      }
+      const motionClass = state.isMini ? 'panel-closing' : 'panel-opening';
+      panel.classList.remove('panel-opening', 'panel-closing');
+      panel.classList.add(motionClass);
+      window.setTimeout(() => panel.classList.remove(motionClass), 260);
+    }
     if (!state.isMini) {
         renderList();
         renderToolbar();
@@ -498,6 +523,7 @@
       startTop = rect.top;
 
       panel.style.transition = 'none';
+      panel.style.transform = 'none';
       document.body.style.userSelect = 'none';
 
       if (state.isMini) panel.classList.remove('peek', 'dock-left', 'dock-right');
@@ -571,9 +597,10 @@
         z-index: 2147483647;
         font-family: system-ui, -apple-system, sans-serif;
         color: var(--pdf-text-main);
+        will-change: transform;
         transition: top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
                     left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-                    right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                    transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
                     opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
                     background-color 0.3s,
                     border-radius 0.3s;
@@ -592,7 +619,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        transform-origin: center center;
       }
+      #pdf-catcher-panel.mini.dock-left { transform-origin: left center; }
+      #pdf-catcher-panel.mini.dock-right { transform-origin: right center; }
 
       #pdf-catcher-panel.mini::after {
         content: '';
@@ -604,6 +634,23 @@
       #pdf-catcher-panel.mini:hover { background: var(--pdf-surface-hover); }
       #pdf-catcher-panel.mini.peek { opacity: ${CONFIG.dockOpacity}; }
       #pdf-catcher-panel.mini.peek:hover { opacity: 1; }
+
+      #pdf-catcher-panel.expanded { transform-origin: right center; }
+      #pdf-catcher-panel.dock-left.expanded { transform-origin: left center; }
+      #pdf-catcher-panel.panel-opening .pdf-catcher-full-content {
+        animation: pdf-catcher-content-in 0.22s ease both;
+      }
+      #pdf-catcher-panel.panel-closing .pdf-catcher-mini-content {
+        animation: pdf-catcher-mini-in 0.18s ease both;
+      }
+      @keyframes pdf-catcher-content-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes pdf-catcher-mini-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
 
       .pdf-catcher-badge {
         position: absolute;
@@ -787,7 +834,7 @@
         background: rgba(39, 39, 42, 0.96); border: 1px solid var(--pdf-border);
         box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28); border-radius: 8px;
         padding: 10px 12px; display: flex; align-items: center; gap: 9px;
-        opacity: 0; transform: translateY(12px); transition: all 0.2s ease;
+        opacity: 0; transform: translateY(12px); transition: opacity 0.2s ease, transform 0.2s ease;
       }
       .pdf-toast.show { opacity: 1; transform: translateY(0); }
       .pdf-toast-icon { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 18px; }
@@ -796,6 +843,16 @@
       .pdf-toast-success .pdf-toast-icon { color: var(--pdf-success); }
       .pdf-toast-error .pdf-toast-icon { color: var(--pdf-danger); }
       .pdf-toast-info .pdf-toast-icon { color: var(--pdf-accent); }
+      @media (prefers-reduced-motion: reduce) {
+        #pdf-catcher-panel,
+        #pdf-catcher-panel *,
+        #pdf-catcher-toasts,
+        #pdf-catcher-toasts * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
       @media (max-width: 420px) { #pdf-catcher-toasts { left: 12px; right: 12px; bottom: 14px; align-items: center; } .pdf-toast { min-width: 0; width: min(100%, 360px); } }
 
       @media (max-width: 420px) {
