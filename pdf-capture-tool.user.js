@@ -1005,7 +1005,13 @@
 
     let scanTimerStarted = false;
     const run = () => {
-        if (isTopWindow && !state.uiReady) ensureUI();
+        if (isTopWindow && !state.uiReady) {
+            try {
+                ensureUI();
+            } catch (error) {
+                console.error('[PDF Capture Tool] UI initialization failed', error);
+            }
+        }
         scanDOM();
         if (!scanTimerStarted) {
             setInterval(scanDOM, 3000);
