@@ -77,8 +77,26 @@
   function gmSet(key, value) { try { if (typeof GM_setValue === 'function') return GM_setValue(key, value); } catch {} try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
   function normalizeUrl(url) { if (!url) return ''; try { const u = new URL(url, location.href); u.hash = ''; return u.href; } catch { return url; } }
   function sanitizeFilename(name) { return String(name).replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, ' ').trim() || 'download.pdf'; }
-  function getFileNameFromUrl(url) { try { const u = new URL(url, location.href); const path = u.pathname.split('/').filter(Boolean); let name = decodeURIComponent(path[path.length - 1] || 'download.pdf'); if (!/\.pdf$/i.test(name)) name += '.pdf'; return sanitizeFilename(name); } catch { return 'download.pdf'; } }
+  function getFileNameFromUrl(url) {
+    try {
+      const u = new URL(url, location.href);
+      const queryName = ['filename', 'file', 'download', 'attachment', 'name']
+        .map(key => u.searchParams.get(key))
+        .find(value => value && /\.pdf$/i.test(value));
+      const path = u.pathname.split('/').filter(Boolean);
+      let name = queryName || path[path.length - 1] || 'download.pdf';
+      try { name = decodeURIComponent(name); } catch {}
+      if (!/\.pdf$/i.test(name)) name += '.pdf';
+      return sanitizeFilename(name);
+    } catch {
+      return 'download.pdf';
+    }
+  }
   function parseFilenameFromContentDisposition(cd) { if (!cd) return ''; let m = cd.match(/filename\*=UTF-8''([^;]+)/i); if (m && m[1]) { try { return sanitizeFilename(decodeURIComponent(m[1].replace(/["']/g, ''))); } catch {} } m = cd.match(/filename="?([^"]+)"?/i); if (m && m[1]) return sanitizeFilename(m[1]); return ''; }
+  function getFileNameHint(element) {
+    const value = element?.getAttribute?.('download') || '';
+    return value && value !== 'true' ? sanitizeFilename(value) : '';
+  }
   function isLikelyPdfUrl(url) { if (!url) return false; return (/\.pdf(?:$|[?#])/i.test(url) || /[?&](file|filename|download|attachment)=[^&#]*\.pdf(?:$|[&#])/i.test(url) || /^blob:/i.test(url) || /^data:application\/pdf/i.test(url)); }
   function isKnownDemoPdfUrl(url) {
     try {
@@ -113,7 +131,10 @@
 
     if (state.items.has(key)) {
       const old = state.items.get(key);
-      old.fileName = old.fileName || item.fileName;
+      const fallbackName = getFileNameFromUrl(normalized);
+      if (item.fileName && (!old.fileName || old.fileName === fallbackName || old.fileName === 'download.pdf')) {
+        old.fileName = sanitizeFilename(item.fileName);
+      }
       old.detectedAt = new Date().toISOString();
       persistItems();
       if (!state.isMini) renderList();
@@ -414,7 +435,7 @@
       if (state.isPaused) return;
       document.querySelectorAll('a[href], iframe[src], embed[src]').forEach(el => {
           const url = el.href || el.src;
-          if (isLikelyPdfUrl(url)) captureFromUrl(url, 'dom');
+          if (isLikelyPdfUrl(url)) captureFromUrl(url, 'dom', { fileName: getFileNameHint(el) });
       });
   }
 
