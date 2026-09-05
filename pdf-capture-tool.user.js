@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PDF 捕获器
 // @namespace    http://tampermonkey.net/
-// @version      0.0.1
+// @version      0.0.2
 // @description  捕获页面 PDF，极简 UI
 // @author       Kevynf
 // @license      MIT
@@ -571,6 +571,11 @@
 
   function ensureUI() {
     if (!isTopWindow || state.uiReady) return;
+    if (!document.head || !document.body) return;
+    if (document.getElementById('pdf-catcher-panel')) {
+      state.uiReady = true;
+      return;
+    }
 
     const style = document.createElement('style');
     style.textContent = `
@@ -998,10 +1003,15 @@
         });
     }
 
+    let scanTimerStarted = false;
     const run = () => {
-        if (isTopWindow) ensureUI();
+        if (isTopWindow && !state.uiReady) ensureUI();
         scanDOM();
-        setInterval(scanDOM, 3000);
+        if (!scanTimerStarted) {
+            setInterval(scanDOM, 3000);
+            scanTimerStarted = true;
+        }
+        if (isTopWindow && !state.uiReady) setTimeout(run, 100);
     };
 
     if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', run);
