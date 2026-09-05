@@ -97,6 +97,17 @@
     const value = element?.getAttribute?.('download') || '';
     return value && value !== 'true' ? sanitizeFilename(value) : '';
   }
+  function getDisplayFileName(name) {
+    let original = String(name || '').trim();
+    try { original = decodeURIComponent(original); } catch {}
+    if (!original || /^download\.pdf$/i.test(original)) return '未命名 PDF';
+    const extension = /\.pdf$/i.test(original) ? '.pdf' : '';
+    const base = original.replace(/\.pdf$/i, '')
+      .replace(/[_]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return `${base || '未命名'}${extension}`;
+  }
   function isLikelyPdfUrl(url) { if (!url) return false; return (/\.pdf(?:$|[?#])/i.test(url) || /[?&](file|filename|download|attachment)=[^&#]*\.pdf(?:$|[&#])/i.test(url) || /^blob:/i.test(url) || /^data:application\/pdf/i.test(url)); }
   function isKnownDemoPdfUrl(url) {
     try {
@@ -289,7 +300,7 @@
     list.innerHTML = items.map(item => `
       <div class="pdf-item">
         <div class="pdf-item-main">
-           <div class="pdf-item-title" title="${escapeHtml(item.fileName)}">${escapeHtml(item.fileName)}</div>
+           <div class="pdf-item-title" title="${escapeHtml(item.fileName)}">${escapeHtml(getDisplayFileName(item.fileName))}</div>
            <div class="pdf-item-meta">
              ${isNewItem(item) ? `<span class="pdf-badge pdf-badge-new">NEW</span>` : ''}
              <span class="pdf-badge">${escapeHtml(item.source.split(':')[0])}</span>
