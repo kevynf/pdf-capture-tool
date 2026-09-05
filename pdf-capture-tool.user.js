@@ -108,7 +108,19 @@
       .trim();
     return `${base || '未命名'}${extension}`;
   }
-  function isLikelyPdfUrl(url) { if (!url) return false; return (/\.pdf(?:$|[?#])/i.test(url) || /[?&](file|filename|download|attachment)=[^&#]*\.pdf(?:$|[&#])/i.test(url) || /^blob:/i.test(url) || /^data:application\/pdf/i.test(url)); }
+  function isLikelyPdfUrl(url) {
+    if (!url) return false;
+    if (/^blob:/i.test(url) || /^data:application\/pdf/i.test(url)) return true;
+    try {
+      const parsed = new URL(url, location.href);
+      const path = parsed.pathname;
+      return /\.pdf$/i.test(path)
+        || /(?:^|\/)pdf(?:\/|$)/i.test(path)
+        || /[?&](file|filename|download|attachment)=[^&#]*(?:\.pdf|%2e?pdf)(?:$|[&#])/i.test(parsed.search);
+    } catch {
+      return /\.pdf(?:$|[?#])/i.test(url);
+    }
+  }
   function isKnownDemoPdfUrl(url) {
     try {
       const parsed = new URL(url, location.href);
@@ -371,9 +383,9 @@
 
   // --- Capture Logic (Hooks) ---
   function captureFromUrl(url, source, extra = {}) {
-    if (state.isPaused) return;
+    if (isTopWindow && state.isPaused) return;
     const abs = normalizeUrl(url);
-    if (!isLikelyPdfUrl(abs)) return;
+    if (!isLikelyPdfUrl(abs) && !(extra.fileName && /\.pdf$/i.test(extra.fileName))) return;
     if (isKnownDemoPdfUrl(abs)) return;
     const itemData = { url: abs, source, method: extra.method, fileName: extra.fileName, detectedAt: new Date().toISOString() };
 
@@ -389,7 +401,7 @@
   const originalFetch = window.fetch;
   if (originalFetch) {
     window.fetch = async function (...args) {
-      if (!state.isPaused) {
+      if (!isTopWindow || !state.isPaused) {
           const url = args[0] instanceof Request ? args[0].url : args[0];
           const method = args[1]?.method || 'GET';
           captureFromUrl(url, 'fetch', { method });
@@ -397,20 +409,20 @@
 
       const resp = await originalFetch.apply(this, args);
 
-      if (!state.isPaused) {
+      if (!isTopWindow || !state.isPaused) {
           const clone = resp.clone();
           const ct = clone.headers.get('content-type');
           const cd = clone.headers.get('content-disposition');
 
           if (isPdfContentType(ct) || /\.pdf/i.test(cd) || /\.pdf$/i.test(resp.url)) {
-            addPdfItem({ url: resp.url, source: 'fetch:resp', fileName: parseFilenameFromContentDisposition(cd) || getFileNameFromUrl(resp.url) });
+            reportPdfItem({ url: resp.url, source: 'fetch:resp', fileName: parseFilenameFromContentDisposition(cd) || getFileNameFromUrl(resp.url) });
           } else if (CONFIG.tryReadFetchBodyForPdf && resp.ok) {
             try {
                 const reader = clone.body?.getReader();
                 if(reader) {
                     const {value} = await reader.read();
                     if(value && arrayBufferStartsWithPdfMagic(value.buffer)) {
-                         captureFromUrl(resp.url, 'fetch:magic', { fileName: getFileNameFromUrl(resp.url) });
+                         reportPdfItem({ url: resp.url, source: 'fetch:magic', fileName: getFileNameFromUrl(resp.url) });
                     }
                     reader.cancel();
                 }
@@ -424,14 +436,14 @@
   (function hookXHR() {
     const originalOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function (method, url) {
-      if (!state.isPaused) captureFromUrl(url, 'xhr', { method });
+      if (!isTopWindow || !state.isPaused) captureFromUrl(url, 'xhr', { method });
       this.addEventListener('load', () => {
-        if (state.isPaused) return;
+        if (isTopWindow && state.isPaused) return;
         const responseUrl = this.responseURL || url;
         const contentType = this.getResponseHeader('content-type') || '';
         const contentDisposition = this.getResponseHeader('content-disposition') || '';
         if (isPdfContentType(contentType) || /\.pdf/i.test(contentDisposition)) {
-          addPdfItem({
+          reportPdfItem({
             url: responseUrl,
             source: 'xhr:resp',
             fileName: parseFilenameFromContentDisposition(contentDisposition) || getFileNameFromUrl(responseUrl),
@@ -443,12 +455,32 @@
   })();
 
   function scanDOM() {
-      if (state.isPaused) return;
+      if (isTopWindow && state.isPaused) return;
       document.querySelectorAll('a[href], iframe[src], embed[src]').forEach(el => {
           const url = el.href || el.src;
-          if (isLikelyPdfUrl(url)) captureFromUrl(url, 'dom', { fileName: getFileNameHint(el) });
+          if (isLikelyPdfUrl(url) || getFileNameHint(el)) captureFromUrl(url, 'dom', { fileName: getFileNameHint(el) });
       });
   }
+
+  function reportPdfItem(item) {
+    if (isTopWindow) {
+      addPdfItem(item);
+      return;
+    }
+    try {
+      window.top.postMessage({ source: 'PDF_CATCHER', action: 'ADD_ITEM', payload: item }, '*');
+    } catch {}
+  }
+
+  document.addEventListener('click', event => {
+    if (isTopWindow && state.isPaused) return;
+    const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+    if (!link) return;
+    const url = link.href;
+    if (isLikelyPdfUrl(url) || getFileNameHint(link)) {
+      captureFromUrl(url, 'dom:click', { fileName: getFileNameHint(link) });
+    }
+  }, true);
 
   // --- UI Construction ---
   function enableDrag(panel, handle, isMiniHandle = false) {
