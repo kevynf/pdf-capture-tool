@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PDF 捕获器
 // @namespace    http://tampermonkey.net/
-// @version      0.0.2
+// @version      0.0.13
 // @description  捕获页面 PDF，极简 UI
 // @author       Kevynf
 // @license      MIT
@@ -32,10 +32,10 @@
     debug: false,
     tryReadFetchBodyForPdf: true,
     defaultTop: 120,
-    miniSize: 42,
+    miniSize: 36,
     edgeSnapThreshold: 30,
-    peekSize: 14,
-    dockOpacity: 0.5,
+    peekSize: 30,
+    dockOpacity: 0.68,
     newItemDurationMs: 3 * 60 * 1000,
     storageKeyUI: '__pdf_catcher_pro_ui_v3_4__',
     storageKeyItems: '__pdf_catcher_pro_items_v3_4__',
@@ -228,7 +228,9 @@
     const newCount = getAllItems().filter(isNewItem).length;
     const badge = document.getElementById('pdf-catcher-badge');
     if (badge) {
-        badge.textContent = newCount > 99 ? '99+' : newCount;
+        const displayCount = newCount > 99 ? '99+' : String(newCount);
+        badge.textContent = displayCount;
+        badge.classList.toggle('pdf-catcher-badge-wide', newCount >= 10);
         badge.style.display = newCount > 0 ? 'flex' : 'none';
     }
 
@@ -266,25 +268,10 @@
 
   function togglePanel() {
     const panel = document.getElementById('pdf-catcher-panel');
-    const beforeRect = panel?.getBoundingClientRect();
-    panel?.__pdfResizeAnimation?.cancel();
     state.isMini = !state.isMini;
     persistUI();
     updateDockAppearance();
     if (panel) {
-      const afterRect = panel.getBoundingClientRect();
-      const targetTransform = getComputedStyle(panel).transform;
-      const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-      if (beforeRect && afterRect.width > 0 && afterRect.height > 0 && !reduceMotion && typeof panel.animate === 'function') {
-        const scaleX = Math.max(0.05, beforeRect.width / afterRect.width);
-        const scaleY = Math.max(0.05, beforeRect.height / afterRect.height);
-        const scaleTransform = `scale(${scaleX}, ${scaleY})`;
-        panel.__pdfResizeAnimation = panel.animate([
-          { transform: state.isMini ? scaleTransform : targetTransform },
-          { transform: state.isMini ? targetTransform : 'none' },
-        ], { duration: 220, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)' });
-        panel.__pdfResizeAnimation.onfinish = () => { panel.__pdfResizeAnimation = null; };
-      }
       const motionClass = state.isMini ? 'panel-closing' : 'panel-opening';
       panel.classList.remove('panel-opening', 'panel-closing');
       panel.classList.add(motionClass);
@@ -528,7 +515,7 @@
       panel.style.transform = 'none';
       document.body.style.userSelect = 'none';
 
-      if (state.isMini) panel.classList.remove('peek', 'dock-left', 'dock-right');
+      if (state.isMini) panel.classList.remove('peek');
 
       const onMove = (e) => {
         if (!isDragging) return;
@@ -606,12 +593,12 @@
         font-family: system-ui, -apple-system, sans-serif;
         color: var(--pdf-text-main);
         will-change: transform;
-        transition: top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-                    left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-                    transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-                    opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-                    background-color 0.3s,
-                    border-radius 0.3s;
+        transition: top 0.2s ease-in-out,
+                    left 0.2s ease-in-out,
+                    transform 0.2s ease-in-out,
+                    opacity 0.2s ease-in-out,
+                    background-color 0.2s ease-in-out,
+                    border-radius 0.2s ease-in-out;
         box-sizing: border-box;
       }
       #pdf-catcher-panel * { box-sizing: border-box; line-height: 1.2; }
@@ -619,7 +606,7 @@
       #pdf-catcher-panel.mini {
         width: ${CONFIG.miniSize}px;
         height: ${CONFIG.miniSize}px;
-        border-radius: 50%;
+        border-radius: 8px;
         background: var(--pdf-surface);
         border: 1px solid var(--pdf-border);
         box-shadow: var(--pdf-shadow);
@@ -642,20 +629,26 @@
       #pdf-catcher-panel.mini:hover { background: var(--pdf-surface-hover); }
       #pdf-catcher-panel.mini.peek { opacity: ${CONFIG.dockOpacity}; }
       #pdf-catcher-panel.mini.peek:hover { opacity: 1; }
+      #pdf-catcher-panel.mini .pdf-catcher-mini-content > svg {
+        color: #f4f4f5;
+        stroke-width: 2.25;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+        transition: color 0.15s ease, filter 0.15s ease;
+      }
+      #pdf-catcher-panel.mini:hover .pdf-catcher-mini-content > svg {
+        color: #ffffff;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.65));
+      }
 
       #pdf-catcher-panel.expanded { transform-origin: right center; }
       #pdf-catcher-panel.dock-left.expanded { transform-origin: left center; }
       #pdf-catcher-panel.panel-opening .pdf-catcher-full-content {
-        animation: pdf-catcher-content-in 0.22s ease both;
+        animation: pdf-catcher-content-in 0.2s ease-in-out both;
       }
       #pdf-catcher-panel.panel-closing .pdf-catcher-mini-content {
-        animation: pdf-catcher-mini-in 0.18s ease both;
+        animation: pdf-catcher-content-in 0.2s ease-in-out both;
       }
       @keyframes pdf-catcher-content-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      @keyframes pdf-catcher-mini-in {
         from { opacity: 0; }
         to { opacity: 1; }
       }
@@ -669,14 +662,21 @@
         font-size: 9px;
         font-weight: 700;
         height: 16px;
-        min-width: 16px;
-        padding: 0 4px;
-        border-radius: 8px;
+        width: 16px;
+        padding: 0;
+        border-radius: 999px;
         display: none;
         align-items: center;
         justify-content: center;
         border: 2px solid var(--pdf-bg);
       }
+      .pdf-catcher-badge-wide {
+        width: auto;
+        min-width: 22px;
+        padding: 0 4px;
+      }
+      #pdf-catcher-panel.mini.dock-left .pdf-catcher-badge { left: auto; right: -2px; }
+      #pdf-catcher-panel.mini.dock-right .pdf-catcher-badge { left: -2px; right: auto; }
 
       #pdf-catcher-panel.expanded {
         width: min(${CONFIG.panelWidth}px, calc(100vw - 24px));
